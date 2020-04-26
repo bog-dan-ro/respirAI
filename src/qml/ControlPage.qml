@@ -24,6 +24,9 @@ import QtCharts 2.2
 
 Page {
     title: qsTr("Control Page")
+    StackView.onActivated: window.header.visible = false
+    StackView.onDeactivated: window.header.visible = true
+
     Connections {
         target: __sensorsDataManager
         onDataChanged: {
@@ -39,14 +42,11 @@ Page {
     }
 
     RowLayout {
-        anchors {
-            fill: parent
-            margins: 10
-        }
+        anchors.fill: parent
 
         ColumnLayout {
             id: chartsLayout
-
+            spacing: -20 // remove the space between the charts
             Layout.fillHeight: true
             Layout.fillWidth: true
 
@@ -85,6 +85,7 @@ Page {
                     max: 500
                     tickCount: 2
                 }
+                valueXAxis.labelsVisible: true
             }
         }
 
@@ -92,7 +93,34 @@ Page {
             id: controlsLayout
             Layout.fillHeight: true
             Layout.fillWidth: false
-            Item {}
+            Item {
+                height: 20
+            }
+            Label {
+                Layout.alignment: Qt.AlignHCenter
+                text: "Max pressure"
+            }
+            SpinBox {
+                from: 0
+                to: 5000
+                editable: true
+            }
+            Item {
+                height: 50
+            }
+            Label {
+                Layout.alignment: Qt.AlignHCenter
+                text: "Max airflow"
+            }
+            SpinBox {
+                from: 0
+                to: 5000
+                editable: true
+            }
+
+            Item {
+                Layout.fillHeight: true
+            }
         }
     }
 }

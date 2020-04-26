@@ -31,6 +31,7 @@ ChartView {
     property bool useOpenGL: true
 
     property alias seconds: valueXAxis.max
+    property alias valueXAxis: valueXAxis
     property alias valueYAxis: valueYAxis
 
     property var first: leftSeries
@@ -80,6 +81,7 @@ ChartView {
         max: 15
         tickCount: 15
         labelFormat: "%.0f"
+        labelsVisible: false
     }
     ValueAxis {
         id: valueYAxis
