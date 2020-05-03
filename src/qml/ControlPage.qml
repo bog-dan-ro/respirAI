@@ -41,6 +41,11 @@ Page {
         __sensorsDataManager.active = true
     }
 
+    ParametersPopup {
+        id: parametersPopup
+        x: (parent.width - width) / 2
+    }
+
     RowLayout {
         anchors.fill: parent
 
@@ -58,6 +63,7 @@ Page {
                 valueYAxis {
                     min: -5
                     max: 60
+                    tickCount: 5
                     labelFormat: "%.0f"
                 }
             }
@@ -91,31 +97,51 @@ Page {
 
         ColumnLayout {
             id: controlsLayout
+            Layout.rightMargin: 5
             Layout.fillHeight: true
             Layout.fillWidth: false
-            Item {
-                height: 20
+
+            ValueLabel {
+                Layout.fillWidth: true
+                label: qsTr("Mode")
+                value: "VC-SIMV"
             }
-            Label {
-                Layout.alignment: Qt.AlignHCenter
-                text: "Max pressure"
+
+            ValueLabel {
+                Layout.fillWidth: true
+                label: qsTr("<b>VT</b> mL")
+                value: "410"
+                alarm: true
             }
-            SpinBox {
-                from: 0
-                to: 5000
-                editable: true
+
+            ValueLabel {
+                Layout.fillWidth: true
+                label: qsTr("<b>MV</b> L/min")
+                value: "5.92"
             }
-            Item {
-                height: 50
+
+            ValueLabel {
+                Layout.fillWidth: true
+                label: qsTr("<b>PIP</b> mbar")
+                value: "25"
             }
-            Label {
-                Layout.alignment: Qt.AlignHCenter
-                text: "Max airflow"
+
+            ValueLabel {
+                Layout.fillWidth: true
+                label: qsTr("<b>R</b> mbar/L/s")
+                value: "10"
             }
-            SpinBox {
-                from: 0
-                to: 5000
-                editable: true
+
+            ValueLabel {
+                Layout.fillWidth: true
+                label: qsTr("<b>C</b> mL/mbar")
+                value: "34"
+            }
+
+            Button {
+                text: qsTr("Parameters")
+                icon.source: "configure.svg"
+                onClicked: parametersPopup.open()
             }
 
             Item {

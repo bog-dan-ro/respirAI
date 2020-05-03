@@ -3,7 +3,7 @@ DESTDIR = $$PWD/..
 
 QT += quick charts serialport
 
-CONFIG += c++11
+CONFIG += c++14
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
@@ -12,12 +12,16 @@ DUMMY_DATA: DEFINES += DUMMY_DATA
 SOURCES += \
         alarmsmanager.cpp \
         main.cpp \
+        packet.cpp \
         sensorsdatamanager.cpp \
+        serialmanager.cpp \
         startupmanager.cpp
 
 HEADERS += \
         alarmsmanager.h \
+        packet.h \
         sensorsdatamanager.h \
+        serialmanager.h \
         startupmanager.h
 
 RESOURCES += \

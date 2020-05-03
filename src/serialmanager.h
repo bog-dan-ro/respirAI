@@ -17,34 +17,43 @@
 
 #pragma once
 
-#include <QObject>
-#include <QTimer>
+#include <QSerialPort>
 
-class StartupManager : public QObject
+#include <memory>
+
+class Packet;
+class SerialManager : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
+    Q_PROPERTY(Status status READ status WRITE setStatus NOTIFY statusChanged)
 
 public:
-    enum class Status {
-        Checked,
-        Checking,
-        Failure
+    enum class Status{
+        Connected,
+        Connecting,
+        Unconnected
     };
-    Q_ENUM(Status)
+    Q_ENUM(Status);
 
 public:
-    explicit StartupManager(QObject *parent = nullptr);
+    static SerialManager &instance();
     Status status() const;
-    void setStatus(Status status);
 
 public slots:
     void retry();
+    bool writePacket(const Packet &packet);
 
 signals:
     void statusChanged(Status status);
+    void packetReady(const Packet &packet);
 
 private:
-    Status m_status = Status::Checking;
-    QTimer m_heartBeat;
+    SerialManager();
+    void setStatus(Status status);
+    void processAvailableBytes();
+    Packet *readPacket();
+
+private:
+    std::unique_ptr<QSerialPort> m_serialPort;
+    Status m_status = Status::Unconnected;
 };

@@ -6,5 +6,8 @@
         <file>CheckListPage.qml</file>
         <file>ControlPage.qml</file>
         <file>LinesChart.qml</file>
+        <file>ValueLabel.qml</file>
+        <file>configure.svg</file>
+        <file>ParametersPopup.qml</file>
     </qresource>
 </RCC>

@@ -35,7 +35,7 @@ Page {
     DelayButton {
         anchors.centerIn: parent
         visible: __startupManager.status === StartupManager.Status.Failure
-        text: qsTr("Startup failed, retry")
+        text: qsTr("System check failed, retry")
         onActivated: __startupManager.retry()
     }
     Connections {

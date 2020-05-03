@@ -16,13 +16,50 @@
 */
 
 #include "startupmanager.h"
-#ifdef DUMMY_DATA
-# include <QTimer>
-#endif
+#include "serialmanager.h"
+
+#include <QDebug>
+#include <packet.h>
 
 StartupManager::StartupManager(QObject *parent)
     : QObject(parent)
-{}
+{
+    connect(&SerialManager::instance(), &SerialManager::statusChanged, this, [this](SerialManager::Status status){
+        switch (status) {
+        case SerialManager::Status::Connected:
+            retry();
+            break;
+        case SerialManager::Status::Unconnected:
+            setStatus(Status::Failure);
+            break;
+        default:
+            break;
+        }
+    });
+    connect(&SerialManager::instance(), &SerialManager::packetReady,
+            this, [this](const Packet &packet) {
+        if (packet.fields.type != Packet::Type::BackendStatus)
+            return;
+        m_heartBeat.start();
+        auto payload = packet.payload<BackendStatusPayload>();
+        switch (payload.status){
+        case BackendStatusPayload::Status::NoError:
+            setStatus(Status::Checked);
+            break;
+        case BackendStatusPayload::Status::Error:
+            setStatus(Status::Failure);
+            break;
+        default:
+            setStatus(Status::Checking);
+            break;
+        }
+    });
+    m_heartBeat.setSingleShot(true);
+    m_heartBeat.setInterval(2500);
+    connect(&m_heartBeat, &QTimer::timeout, this, [this]{
+        setStatus(Status::Failure);
+    });
+}
 
 StartupManager::Status StartupManager::status() const
 {
@@ -39,13 +76,18 @@ void StartupManager::setStatus(Status status)
 
 void StartupManager::retry()
 {
-    setStatus(Status::Running);
+    setStatus(Status::Checking);
 #ifdef DUMMY_DATA
     QTimer::singleShot(2500 + qrand() % 2500, this, [this] {
         setStatus(qrand() % 2 ? Status::Checked : Status::Failure);
     });
 #else
-    #warning IMPLEMNT_ME
-    setStatus(Status::Checked);
+    m_heartBeat.stop();
+    if (SerialManager::instance().status() == SerialManager::Status::Connected) {
+        SerialManager::instance().writePacket(Packet{Packet::Type::CheckHealth});
+        m_heartBeat.start();
+    } else {
+        SerialManager::instance().retry();
+    }
 #endif
 }

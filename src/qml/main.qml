@@ -27,27 +27,17 @@ ApplicationWindow {
     title: qsTr("respirAI")
 
     header: ToolBar {
-        contentHeight: alarmAcknowledge.height
         Label {
             id: topLabel
             anchors.centerIn: parent
             text: pageController.currentItem.title
         }
-        DelayButton {
-            id: alarmAcknowledge
-            anchors {
-                right: parent.right
-                verticalCenter: parent.verticalCenter
-            }
-            visible: __alamManager.currentAlarm !== ""
-            text: __alamManager.currentAlarm
-            onActivated: __alamManager.acknowledgeAlarm()
-        }
     }
 
     StackView {
         id: pageController
-        initialItem: "StartupPage.qml"
+        anchors.margins: 0
+        initialItem: "ControlPage.qml" //"StartupPage.qml"
         anchors.fill: parent
     }
 

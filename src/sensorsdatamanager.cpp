@@ -16,11 +16,25 @@
 */
 
 #include "sensorsdatamanager.h"
+#include "serialmanager.h"
+
+#include <packet.h>
 
 SensorsDataManager::SensorsDataManager(QObject *parent)
     : QObject(parent)
 {
     qRegisterMetaType<SensorsData>();
+    connect(&SerialManager::instance(), &SerialManager::packetReady,
+            this, [this](const Packet &packet) {
+        if (packet.fields.type != Packet::Type::SensorsData)
+            return;
+        auto data = packet.payload<SensorsDataPayload>();
+        QMutexLocker lock(&m_dataMutex);
+        m_cachedData.pressure = data.pressure;
+        m_cachedData.flow = data.flow;
+        m_cachedData.volume = data.volume;
+    });
+
     connect(&m_refreshTimer, &QTimer::timeout, this, [this]{
         SensorsData data;
         {
